@@ -7,11 +7,11 @@
  * @flow
  */
 
-import {AsymmetricMatcher} from './asymmetricMatchers';
+import { AsymmetricMatcher } from './asymmetricMatchers';
 import type {
   Expect,
-  MatchersObject,
-  SyncExpectationResult,
+    MatchersObject,
+    SyncExpectationResult,
 } from 'types/Matchers';
 
 // Global matchers object holds the list of available matchers and
@@ -68,36 +68,36 @@ export const setMatchers = (
         }
 
         asymmetricMatch(other: any) {
-          const {pass} = ((matcher(
+          const { pass } = ((matcher(
             (other: any),
             ...(this.sample: any),
           ): any): SyncExpectationResult);
 
-          return this.inverse ? !pass : pass;
-        }
+  return this.inverse ? !pass : pass;
+}
 
-        toString() {
-          return `${this.inverse ? 'not.' : ''}${key}`;
-        }
+toString() {
+  return `${this.inverse ? 'not.' : ''}${key}`;
+}
 
-        getExpectedType() {
-          return 'any';
-        }
+getExpectedType() {
+  return 'any';
+}
 
-        toAsymmetricMatcher() {
-          return `${this.toString()}<${this.sample.join(', ')}>`;
-        }
+toAsymmetricMatcher() {
+  return `${this.toString()}<${this.sample.join(', ')}>`;
+}
       }
 
-      expect[key] = (...sample: Array<any>) =>
-        new CustomMatcher(false, ...sample);
-      if (!expect.not) {
-        expect.not = {};
-      }
-      expect.not[key] = (...sample: Array<any>) =>
-        new CustomMatcher(true, ...sample);
+expect[key] = (...sample: Array<any>) =>
+  new CustomMatcher(false, ...sample);
+if (!expect.not) {
+  expect.not = {};
+}
+expect.not[key] = (...sample: Array<any>) =>
+  new CustomMatcher(true, ...sample);
     }
   });
 
-  Object.assign(global[JEST_MATCHERS_OBJECT].matchers, matchers);
+Object.assign(global[JEST_MATCHERS_OBJECT].matchers, matchers);
 };

@@ -8,7 +8,7 @@
 
 'use strict';
 
-const jestExpect = require('../');
+import jestExpect from "../";
 
 // Custom Error class because node versions have different stack trace strings.
 class customError extends Error {
@@ -25,14 +25,14 @@ class customError extends Error {
 
 ['toThrowError', 'toThrow'].forEach(toThrow => {
   describe('.' + toThrow + '()', () => {
-    class Err extends customError {}
-    class Err2 extends customError {}
+    class Err extends customError { }
+    class Err2 extends customError { }
 
     test('to throw or not to throw', () => {
       jestExpect(() => {
         throw new customError('apple');
       })[toThrow]();
-      jestExpect(() => {}).not[toThrow]();
+      jestExpect(() => { }).not[toThrow]();
     });
 
     describe('strings', () => {
@@ -43,12 +43,12 @@ class customError extends Error {
         jestExpect(() => {
           throw new customError('banana');
         }).not[toThrow]('apple');
-        jestExpect(() => {}).not[toThrow]('apple');
+        jestExpect(() => { }).not[toThrow]('apple');
       });
 
       test('did not throw at all', () => {
         expect(() =>
-          jestExpect(() => {})[toThrow]('apple'),
+          jestExpect(() => { })[toThrow]('apple'),
         ).toThrowErrorMatchingSnapshot();
       });
 
@@ -101,12 +101,12 @@ class customError extends Error {
         expect(() => {
           throw new customError('banana');
         }).not[toThrow](/apple/);
-        expect(() => {}).not[toThrow](/apple/);
+        expect(() => { }).not[toThrow](/apple/);
       });
 
       test('did not throw at all', () => {
         expect(() =>
-          jestExpect(() => {})[toThrow](/apple/),
+          jestExpect(() => { })[toThrow](/apple/),
         ).toThrowErrorMatchingSnapshot();
       });
 
@@ -156,12 +156,12 @@ class customError extends Error {
         jestExpect(() => {
           throw new Err();
         }).not[toThrow](Err2);
-        jestExpect(() => {}).not[toThrow](Err);
+        jestExpect(() => { }).not[toThrow](Err);
       });
 
       test('did not throw at all', () => {
         expect(() =>
-          expect(() => {})[toThrow](Err),
+          expect(() => { })[toThrow](Err),
         ).toThrowErrorMatchingSnapshot();
       });
 
@@ -278,7 +278,7 @@ class customError extends Error {
           });
 
           test('isNot true', () => {
-            jestExpect(() => {}).not[toThrow](expect.anything());
+            jestExpect(() => { }).not[toThrow](expect.anything());
             jestExpect(() => {
               // eslint-disable-next-line no-throw-literal
               throw null;
@@ -452,7 +452,7 @@ class customError extends Error {
             throw new Error();
           }),
         ).rejects[toThrow]();
-        await jestExpect(Promise.reject(() => {})).rejects.not[toThrow]();
+        await jestExpect(Promise.reject(() => { })).rejects.not[toThrow]();
       });
 
       test('did not throw at all', async () => {
@@ -487,7 +487,7 @@ class customError extends Error {
 
     test('invalid arguments', () => {
       expect(() =>
-        jestExpect(() => {}).not[toThrow](111),
+        jestExpect(() => { }).not[toThrow](111),
       ).toThrowErrorMatchingSnapshot();
     });
 

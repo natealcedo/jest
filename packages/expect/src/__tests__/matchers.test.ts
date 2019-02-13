@@ -6,7 +6,7 @@
  *
  */
 
-const {stringify} = require('jest-matcher-utils');
+const { stringify } = require('jest-matcher-utils');
 const jestExpect = require('../');
 const Immutable = require('immutable');
 const chalk = require('chalk');
@@ -32,15 +32,15 @@ describe('.rejects', () => {
     await jestExpect(Promise.reject(4)).rejects.not.toBe(5);
     await jestExpect(Promise.reject(4.2)).rejects.toBeCloseTo(4.2, 5);
     await jestExpect(Promise.reject(3)).rejects.not.toBeCloseTo(4.2, 5);
-    await jestExpect(Promise.reject({a: 1, b: 2})).rejects.toMatchObject({
+    await jestExpect(Promise.reject({ a: 1, b: 2 })).rejects.toMatchObject({
       a: 1,
     });
-    await jestExpect(Promise.reject({a: 1, b: 2})).rejects.not.toMatchObject({
+    await jestExpect(Promise.reject({ a: 1, b: 2 })).rejects.not.toMatchObject({
       c: 1,
     });
     await jestExpect(
       Promise.reject(new Error('rejectMessage')),
-    ).rejects.toMatchObject({message: 'rejectMessage'});
+    ).rejects.toMatchObject({ message: 'rejectMessage' });
     await jestExpect(Promise.reject(new Error())).rejects.toThrow();
   });
 
@@ -51,7 +51,7 @@ describe('.rejects', () => {
     await jestExpect(fn()).rejects.toThrow('some error');
   });
 
-  ['a', [1], () => {}, {a: 1}].forEach(value => {
+  ['a', [1], () => { }, { a: 1 }].forEach(value => {
     it(`fails non-promise value ${stringify(value)} synchronously`, () => {
       let error;
       try {
@@ -115,10 +115,10 @@ describe('.resolves', () => {
     await jestExpect(Promise.resolve(4)).resolves.not.toBe(5);
     await jestExpect(Promise.resolve(4.2)).resolves.toBeCloseTo(4.2, 5);
     await jestExpect(Promise.resolve(3)).resolves.not.toBeCloseTo(4.2, 5);
-    await jestExpect(Promise.resolve({a: 1, b: 2})).resolves.toMatchObject({
+    await jestExpect(Promise.resolve({ a: 1, b: 2 })).resolves.toMatchObject({
       a: 1,
     });
-    await jestExpect(Promise.resolve({a: 1, b: 2})).resolves.not.toMatchObject({
+    await jestExpect(Promise.resolve({ a: 1, b: 2 })).resolves.not.toMatchObject({
       c: 1,
     });
     await jestExpect(
@@ -128,7 +128,7 @@ describe('.resolves', () => {
     ).resolves.toThrow();
   });
 
-  ['a', [1], () => {}, {a: 1}].forEach(value => {
+  ['a', [1], () => { }, { a: 1 }].forEach(value => {
     it(`fails non-promise value ${stringify(value)} synchronously`, () => {
       let error;
       try {
@@ -204,8 +204,8 @@ describe('.toBe()', () => {
     [1, 2],
     [true, false],
     [{}, {}],
-    [{a: 1}, {a: 1}],
-    [{a: 1}, {a: 5}],
+    [{ a: 1 }, { a: 1 }],
+    [{ a: 1 }, { a: 5 }],
     ['abc', 'cde'],
     ['with \ntrailing space', 'without trailing space'],
     [[], []],
@@ -225,14 +225,15 @@ describe('.toBe()', () => {
 
   it('does not crash on circular references', () => {
     const obj = {};
+    // @ts-ignore
     obj.circular = obj;
 
     expect(() => jestExpect(obj).toBe({})).toThrowErrorMatchingSnapshot();
   });
 
   test('assertion error matcherResult property contains matcher name, expected and actual values', () => {
-    const actual = {a: 1};
-    const expected = {a: 2};
+    const actual = { a: 1 };
+    const expected = { a: 2 };
     try {
       jestExpect(actual).toBe(expected);
     } catch (error) {
@@ -249,6 +250,8 @@ describe('.toBe()', () => {
 
 describe('.toStrictEqual()', () => {
   class TestClassA {
+    a: any;
+    b: any;
     constructor(a, b) {
       this.a = a;
       this.b = b;
@@ -256,6 +259,8 @@ describe('.toStrictEqual()', () => {
   }
 
   class TestClassB {
+    a: any;
+    b: any;
     constructor(a, b) {
       this.a = a;
       this.b = b;
@@ -278,40 +283,40 @@ describe('.toStrictEqual()', () => {
     expect({
       a: undefined,
       b: 2,
-    }).not.toStrictEqual({b: 2});
+    }).not.toStrictEqual({ b: 2 });
   });
 
   it('passes when comparing same type', () => {
     expect({
       test: new TestClassA(1, 2),
-    }).toStrictEqual({test: new TestClassA(1, 2)});
+    }).toStrictEqual({ test: new TestClassA(1, 2) });
   });
 
   it('matches the expected snapshot when it fails', () => {
     expect(() =>
       jestExpect({
         test: 2,
-      }).toStrictEqual({test: new TestClassA(1, 2)}),
+      }).toStrictEqual({ test: new TestClassA(1, 2) }),
     ).toThrowErrorMatchingSnapshot();
 
     expect(() =>
       jestExpect({
         test: new TestClassA(1, 2),
-      }).not.toStrictEqual({test: new TestClassA(1, 2)}),
+      }).not.toStrictEqual({ test: new TestClassA(1, 2) }),
     ).toThrowErrorMatchingSnapshot();
   });
 
   it('does not pass for different types', () => {
     expect({
       test: new TestClassA(1, 2),
-    }).not.toStrictEqual({test: new TestClassB(1, 2)});
+    }).not.toStrictEqual({ test: new TestClassB(1, 2) });
   });
 
   it('does not simply compare constructor names', () => {
     const c = new TestClassC(1, 2);
     const d = new TestClassD(1, 2);
     expect(c.constructor.name).toEqual(d.constructor.name);
-    expect({test: c}).not.toStrictEqual({test: d});
+    expect({ test: c }).not.toStrictEqual({ test: d });
   });
 
   /* eslint-disable no-sparse-arrays */
@@ -336,7 +341,7 @@ describe('.toEqual()', () => {
     [true, false],
     [1, 2],
     [0, -0],
-    [{a: 5}, {b: 6}],
+    [{ a: 5 }, { b: 6 }],
     ['banana', 'apple'],
     [null, undefined],
     [[1], [2]],
@@ -363,8 +368,8 @@ describe('.toEqual()', () => {
       new Map([[[1], new Map([[[1], 'one']])]]),
       new Map([[[1], new Map([[[1], 'two']])]]),
     ],
-    [Immutable.Map({a: 0}), Immutable.Map({b: 0})],
-    [Immutable.Map({v: 1}), Immutable.Map({v: 2})],
+    [Immutable.Map({ a: 0 }), Immutable.Map({ b: 0 })],
+    [Immutable.Map({ v: 1 }), Immutable.Map({ v: 2 })],
     [
       Immutable.OrderedMap()
         .set(1, 'one')
@@ -374,11 +379,11 @@ describe('.toEqual()', () => {
         .set(1, 'one'),
     ],
     [
-      Immutable.Map({1: Immutable.Map({2: {a: 99}})}),
-      Immutable.Map({1: Immutable.Map({2: {a: 11}})}),
+      Immutable.Map({ 1: Immutable.Map({ 2: { a: 99 } }) }),
+      Immutable.Map({ 1: Immutable.Map({ 2: { a: 11 } }) }),
     ],
-    [{a: 1, b: 2}, jestExpect.objectContaining({a: 2})],
-    [false, jestExpect.objectContaining({a: 2})],
+    [{ a: 1, b: 2 }, jestExpect.objectContaining({ a: 2 })],
+    [false, jestExpect.objectContaining({ a: 2 })],
     [[1, 3], jestExpect.arrayContaining([1, 2])],
     [1, jestExpect.arrayContaining([1, 2])],
     ['abd', jestExpect.stringContaining('bc')],
@@ -424,7 +429,7 @@ describe('.toEqual()', () => {
     [Immutable.List([1]), Immutable.List([1])],
     [Immutable.List([1, 2]), Immutable.List([1, 2])],
     [{}, {}],
-    [{a: 99}, {a: 99}],
+    [{ a: 99 }, { a: 99 }],
     [new Set(), new Set()],
     [new Set([1, 2]), new Set([1, 2])],
     [new Set([1, 2]), new Set([2, 1])],
@@ -434,7 +439,7 @@ describe('.toEqual()', () => {
       new Set([new Set([[2]]), new Set([[1]])]),
     ],
     [new Set([[1], [2], [3], [3]]), new Set([[3], [3], [2], [1]])],
-    [new Set([{a: 1}, {b: 2}]), new Set([{b: 2}, {a: 1}])],
+    [new Set([{ a: 1 }, { b: 2 }]), new Set([{ b: 2 }, { a: 1 }])],
     [Immutable.Set(), Immutable.Set()],
     [Immutable.Set([1, 2]), Immutable.Set([1, 2])],
     [Immutable.Set([1, 2]), Immutable.Set([2, 1])],
@@ -456,8 +461,8 @@ describe('.toEqual()', () => {
       new Map([[[2], 'two'], [[1], 'one']]),
     ],
     [
-      new Map([[{a: 1}, 'one'], [{b: 2}, 'two']]),
-      new Map([[{b: 2}, 'two'], [{a: 1}, 'one']]),
+      new Map([[{ a: 1 }, 'one'], [{ b: 2 }, 'two']]),
+      new Map([[{ b: 2 }, 'two'], [{ a: 1 }, 'one']]),
     ],
     [
       new Map([[1, ['one']], [2, ['two']]]),
@@ -489,19 +494,19 @@ describe('.toEqual()', () => {
         .set(2, 'two'),
     ],
     [
-      Immutable.Map({1: Immutable.Map({2: {a: 99}})}),
-      Immutable.Map({1: Immutable.Map({2: {a: 99}})}),
+      Immutable.Map({ 1: Immutable.Map({ 2: { a: 99 } }) }),
+      Immutable.Map({ 1: Immutable.Map({ 2: { a: 99 } }) }),
     ],
-    [{a: 1, b: 2}, jestExpect.objectContaining({a: 1})],
+    [{ a: 1, b: 2 }, jestExpect.objectContaining({ a: 1 })],
     [[1, 2, 3], jestExpect.arrayContaining([2, 3])],
     ['abcd', jestExpect.stringContaining('bc')],
     ['abcd', jestExpect.stringMatching('bc')],
     [true, jestExpect.anything()],
-    [() => {}, jestExpect.any(Function)],
+    [() => { }, jestExpect.any(Function)],
     [
       {
         a: 1,
-        b: function b() {},
+        b: function b() { },
         c: true,
       },
       {
@@ -527,8 +532,8 @@ describe('.toEqual()', () => {
   });
 
   test('assertion error matcherResult property contains matcher name, expected and actual values', () => {
-    const actual = {a: 1};
-    const expected = {a: 2};
+    const actual = { a: 1 };
+    const expected = { a: 2 };
     try {
       jestExpect(actual).toEqual(expected);
     } catch (error) {
@@ -544,11 +549,11 @@ describe('.toEqual()', () => {
 
   test('failure message matches the expected snapshot', () => {
     expect(() =>
-      jestExpect({a: 1}).toEqual({a: 2}),
+      jestExpect({ a: 1 }).toEqual({ a: 2 }),
     ).toThrowErrorMatchingSnapshot();
 
     expect(() =>
-      jestExpect({a: 1}).not.toEqual({a: 1}),
+      jestExpect({ a: 1 }).not.toEqual({ a: 1 }),
     ).toThrowErrorMatchingSnapshot();
   });
 
@@ -573,7 +578,7 @@ describe('.toEqual()', () => {
       enumerable: false,
       value: 5,
     });
-    expect(actual).toEqual({x: 3});
+    expect(actual).toEqual({ x: 3 });
   });
 
   test('non-enumerable symbolic members should be skipped during equal', () => {
@@ -585,13 +590,13 @@ describe('.toEqual()', () => {
       enumerable: false,
       value: 5,
     });
-    expect(actual).toEqual({x: 3});
+    expect(actual).toEqual({ x: 3 });
   });
 });
 
 describe('.toBeInstanceOf()', () => {
-  class A {}
-  class B {}
+  class A { }
+  class B { }
 
   [[new Map(), Map], [[], Array], [new A(), A]].forEach(([a, b]) => {
     test(`passing ${stringify(a)} and ${stringify(b)}`, () => {
@@ -637,7 +642,7 @@ describe('.toBeTruthy(), .toBeFalsy()', () => {
     ).toThrowErrorMatchingSnapshot();
   });
 
-  [{}, [], true, 1, 'a', 0.5, new Map(), () => {}, Infinity].forEach(v => {
+  [{}, [], true, 1, 'a', 0.5, new Map(), () => { }, Infinity].forEach(v => {
     test(`'${stringify(v)}' is truthy`, () => {
       jestExpect(v).toBeTruthy();
       jestExpect(v).not.toBeFalsy();
@@ -683,7 +688,7 @@ describe('.toBeNaN()', () => {
 });
 
 describe('.toBeNull()', () => {
-  [{}, [], true, 1, 'a', 0.5, new Map(), () => {}, Infinity].forEach(v => {
+  [{}, [], true, 1, 'a', 0.5, new Map(), () => { }, Infinity].forEach(v => {
     test(`fails for '${stringify(v)}'`, () => {
       jestExpect(v).not.toBeNull();
 
@@ -703,7 +708,7 @@ describe('.toBeNull()', () => {
 });
 
 describe('.toBeDefined(), .toBeUndefined()', () => {
-  [{}, [], true, 1, 'a', 0.5, new Map(), () => {}, Infinity].forEach(v => {
+  [{}, [], true, 1, 'a', 0.5, new Map(), () => { }, Infinity].forEach(v => {
     test(`'${stringify(v)}' is defined`, () => {
       jestExpect(v).toBeDefined();
       jestExpect(v).not.toBeUndefined();
@@ -734,7 +739,7 @@ describe('.toBeDefined(), .toBeUndefined()', () => {
 
 describe(
   '.toBeGreaterThan(), .toBeLessThan(), ' +
-    '.toBeGreaterThanOrEqual(), .toBeLessThanOrEqual()',
+  '.toBeGreaterThanOrEqual(), .toBeLessThanOrEqual()',
   () => {
     [
       [1, 2],
@@ -906,7 +911,7 @@ describe('.toContain(), .toContainEqual()', () => {
     [[undefined, null], null],
     [[undefined, null], undefined],
     [[Symbol.for('a')], Symbol.for('a')],
-    [[{a: 'b'}, {a: 'c'}], {a: 'b'}],
+    [[{ a: 'b' }, { a: 'c' }], { a: 'b' }],
     [new Set([1, 2, 3, 4]), 1],
     [typedArray, 1],
   ].forEach(([list, v]) => {
@@ -920,7 +925,7 @@ describe('.toContain(), .toContainEqual()', () => {
     });
   });
 
-  [[[{a: 'b'}, {a: 'c'}], {a: 'd'}]].forEach(([list, v]) => {
+  [[[{ a: 'b' }, { a: 'c' }], { a: 'd' }]].forEach(([list, v]) => {
     it(`'${stringify(list)}' does not contain a value equal to'${stringify(
       v,
     )}'`, () => {
@@ -1023,12 +1028,12 @@ describe('.toMatch()', () => {
     [[], 'foo'],
     [true, 'foo'],
     [/foo/i, 'foo'],
-    [() => {}, 'foo'],
+    [() => { }, 'foo'],
     [undefined, 'foo'],
   ].forEach(([n1, n2]) => {
     it(
       'throws if non String actual value passed:' +
-        ` [${stringify(n1)}, ${stringify(n2)}]`,
+      ` [${stringify(n1)}, ${stringify(n2)}]`,
       () => {
         expect(() => jestExpect(n1).toMatch(n2)).toThrowErrorMatchingSnapshot();
       },
@@ -1040,12 +1045,12 @@ describe('.toMatch()', () => {
     ['foo', {}],
     ['foo', []],
     ['foo', true],
-    ['foo', () => {}],
+    ['foo', () => { }],
     ['foo', undefined],
   ].forEach(([n1, n2]) => {
     it(
       `throws if non String/RegExp expected value passed:` +
-        ` [${stringify(n1)}, ${stringify(n2)}]`,
+      ` [${stringify(n1)}, ${stringify(n2)}]`,
       () => {
         expect(() => jestExpect(n1).toMatch(n2)).toThrowErrorMatchingSnapshot();
       },
@@ -1086,7 +1091,7 @@ describe('.toHaveLength', () => {
 
   test('error cases', () => {
     expect(() =>
-      jestExpect({a: 9}).toHaveLength(1),
+      jestExpect({ a: 9 }).toHaveLength(1),
     ).toThrowErrorMatchingSnapshot();
     expect(() => jestExpect(0).toHaveLength(1)).toThrowErrorMatchingSnapshot();
     expect(() =>
@@ -1112,14 +1117,14 @@ describe('.toHaveProperty()', () => {
   }
 
   [
-    [{a: {b: {c: {d: 1}}}}, 'a.b.c.d', 1],
-    [{a: {b: {c: {d: 1}}}}, ['a', 'b', 'c', 'd'], 1],
-    [{'a.b.c.d': 1}, ['a.b.c.d'], 1],
-    [{a: {b: [1, 2, 3]}}, ['a', 'b', 1], 2],
-    [{a: 0}, 'a', 0],
-    [{a: {b: undefined}}, 'a.b', undefined],
-    [{a: {b: {c: 5}}}, 'a.b', {c: 5}],
-    [Object.assign(Object.create(null), {property: 1}), 'property', 1],
+    [{ a: { b: { c: { d: 1 } } } }, 'a.b.c.d', 1],
+    [{ a: { b: { c: { d: 1 } } } }, ['a', 'b', 'c', 'd'], 1],
+    [{ 'a.b.c.d': 1 }, ['a.b.c.d'], 1],
+    [{ a: { b: [1, 2, 3] } }, ['a', 'b', 1], 2],
+    [{ a: 0 }, 'a', 0],
+    [{ a: { b: undefined } }, 'a.b', undefined],
+    [{ a: { b: { c: 5 } } }, 'a.b', { c: 5 }],
+    [Object.assign(Object.create(null), { property: 1 }), 'property', 1],
     [new Foo(), 'a', undefined],
     [new Foo(), 'b', 'b'],
   ].forEach(([obj, keyPath, value]) => {
@@ -1134,18 +1139,18 @@ describe('.toHaveProperty()', () => {
   });
 
   [
-    [{a: {b: {c: {d: 1}}}}, 'a.b.ttt.d', 1],
-    [{a: {b: {c: {d: 1}}}}, 'a.b.c.d', 2],
-    [{'a.b.c.d': 1}, 'a.b.c.d', 2],
-    [{'a.b.c.d': 1}, ['a.b.c.d'], 2],
-    [{a: {b: {c: {d: 1}}}}, ['a', 'b', 'c', 'd'], 2],
-    [{a: {b: {c: {}}}}, 'a.b.c.d', 1],
-    [{a: 1}, 'a.b.c.d', 5],
+    [{ a: { b: { c: { d: 1 } } } }, 'a.b.ttt.d', 1],
+    [{ a: { b: { c: { d: 1 } } } }, 'a.b.c.d', 2],
+    [{ 'a.b.c.d': 1 }, 'a.b.c.d', 2],
+    [{ 'a.b.c.d': 1 }, ['a.b.c.d'], 2],
+    [{ a: { b: { c: { d: 1 } } } }, ['a', 'b', 'c', 'd'], 2],
+    [{ a: { b: { c: {} } } }, 'a.b.c.d', 1],
+    [{ a: 1 }, 'a.b.c.d', 5],
     [{}, 'a', 'test'],
-    [{a: {b: 3}}, 'a.b', undefined],
+    [{ a: { b: 3 } }, 'a.b', undefined],
     [1, 'a.b.c', 'test'],
-    ['abc', 'a.b.c', {a: 5}],
-    [{a: {b: {c: 5}}}, 'a.b', {c: 4}],
+    ['abc', 'a.b.c', { a: 5 }],
+    [{ a: { b: { c: 5 } } }, 'a.b', { c: 4 }],
     [new Foo(), 'a', 'a'],
     [new Foo(), 'b', undefined],
   ].forEach(([obj, keyPath, value]) => {
@@ -1160,12 +1165,12 @@ describe('.toHaveProperty()', () => {
   });
 
   [
-    [{a: {b: {c: {d: 1}}}}, 'a.b.c.d'],
-    [{a: {b: {c: {d: 1}}}}, ['a', 'b', 'c', 'd']],
-    [{'a.b.c.d': 1}, ['a.b.c.d']],
-    [{a: {b: [1, 2, 3]}}, ['a', 'b', 1]],
-    [{a: 0}, 'a'],
-    [{a: {b: undefined}}, 'a.b'],
+    [{ a: { b: { c: { d: 1 } } } }, 'a.b.c.d'],
+    [{ a: { b: { c: { d: 1 } } } }, ['a', 'b', 'c', 'd']],
+    [{ 'a.b.c.d': 1 }, ['a.b.c.d']],
+    [{ a: { b: [1, 2, 3] } }, ['a', 'b', 1]],
+    [{ a: 0 }, 'a'],
+    [{ a: { b: undefined } }, 'a.b'],
   ].forEach(([obj, keyPath]) => {
     test(`{pass: true} expect(${stringify(
       obj,
@@ -1178,8 +1183,8 @@ describe('.toHaveProperty()', () => {
   });
 
   [
-    [{a: {b: {c: {}}}}, 'a.b.c.d'],
-    [{a: 1}, 'a.b.c.d'],
+    [{ a: { b: { c: {} } } }, 'a.b.c.d'],
+    [{ a: 1 }, 'a.b.c.d'],
     [{}, 'a'],
     [1, 'a.b.c'],
     ['abc', 'a.b.c'],
@@ -1197,9 +1202,9 @@ describe('.toHaveProperty()', () => {
   [
     [null, 'a.b'],
     [undefined, 'a'],
-    [{a: {b: {}}}, undefined],
-    [{a: {b: {}}}, null],
-    [{a: {b: {}}}, 1],
+    [{ a: { b: {} } }, undefined],
+    [{ a: { b: {} } }, null],
+    [{ a: { b: {} } }, 1],
   ].forEach(([obj, keyPath]) => {
     test(`{error} expect(${stringify(
       obj,
@@ -1222,28 +1227,28 @@ describe('toMatchObject()', () => {
   }
 
   [
-    [{a: 'b', c: 'd'}, {a: 'b'}],
-    [{a: 'b', c: 'd'}, {a: 'b', c: 'd'}],
-    [{a: 'b', t: {x: {r: 'r'}, z: 'z'}}, {a: 'b', t: {z: 'z'}}],
-    [{a: 'b', t: {x: {r: 'r'}, z: 'z'}}, {t: {x: {r: 'r'}}}],
-    [{a: [3, 4, 5], b: 'b'}, {a: [3, 4, 5]}],
-    [{a: [3, 4, 5, 'v'], b: 'b'}, {a: [3, 4, 5, 'v']}],
-    [{a: 1, c: 2}, {a: jestExpect.any(Number)}],
-    [{a: {x: 'x', y: 'y'}}, {a: {x: jestExpect.any(String)}}],
+    [{ a: 'b', c: 'd' }, { a: 'b' }],
+    [{ a: 'b', c: 'd' }, { a: 'b', c: 'd' }],
+    [{ a: 'b', t: { x: { r: 'r' }, z: 'z' } }, { a: 'b', t: { z: 'z' } }],
+    [{ a: 'b', t: { x: { r: 'r' }, z: 'z' } }, { t: { x: { r: 'r' } } }],
+    [{ a: [3, 4, 5], b: 'b' }, { a: [3, 4, 5] }],
+    [{ a: [3, 4, 5, 'v'], b: 'b' }, { a: [3, 4, 5, 'v'] }],
+    [{ a: 1, c: 2 }, { a: jestExpect.any(Number) }],
+    [{ a: { x: 'x', y: 'y' } }, { a: { x: jestExpect.any(String) } }],
     [new Set([1, 2]), new Set([1, 2])],
     [new Set([1, 2]), new Set([2, 1])],
     [new Date('2015-11-30'), new Date('2015-11-30')],
-    [{a: new Date('2015-11-30'), b: 'b'}, {a: new Date('2015-11-30')}],
-    [{a: null, b: 'b'}, {a: null}],
-    [{a: undefined, b: 'b'}, {a: undefined}],
-    [{a: [{a: 'a', b: 'b'}]}, {a: [{a: 'a'}]}],
+    [{ a: new Date('2015-11-30'), b: 'b' }, { a: new Date('2015-11-30') }],
+    [{ a: null, b: 'b' }, { a: null }],
+    [{ a: undefined, b: 'b' }, { a: undefined }],
+    [{ a: [{ a: 'a', b: 'b' }] }, { a: [{ a: 'a' }] }],
     [[1, 2], [1, 2]],
-    [{a: undefined}, {a: undefined}],
+    [{ a: undefined }, { a: undefined }],
     [[], []],
     [new Error('foo'), new Error('foo')],
-    [new Error('bar'), {message: 'bar'}],
-    [new Foo(), {a: undefined, b: 'b'}],
-    [Object.assign(Object.create(null), {a: 'b'}), {a: 'b'}],
+    [new Error('bar'), { message: 'bar' }],
+    [new Foo(), { a: undefined, b: 'b' }],
+    [Object.assign(Object.create(null), { a: 'b' }), { a: 'b' }],
   ].forEach(([n1, n2]) => {
     it(`{pass: true} expect(${stringify(n1)}).toMatchObject(${stringify(
       n2,
@@ -1256,31 +1261,31 @@ describe('toMatchObject()', () => {
   });
 
   [
-    [{a: 'b', c: 'd'}, {e: 'b'}],
-    [{a: 'b', c: 'd'}, {a: 'b!', c: 'd'}],
-    [{a: 'a', c: 'd'}, {a: jestExpect.any(Number)}],
-    [{a: 'b', t: {x: {r: 'r'}, z: 'z'}}, {a: 'b', t: {z: [3]}}],
-    [{a: 'b', t: {x: {r: 'r'}, z: 'z'}}, {t: {l: {r: 'r'}}}],
-    [{a: [3, 4, 5], b: 'b'}, {a: [3, 4, 5, 6]}],
-    [{a: [3, 4, 5], b: 'b'}, {a: [3, 4]}],
-    [{a: [3, 4, 'v'], b: 'b'}, {a: ['v']}],
-    [{a: [3, 4, 5], b: 'b'}, {a: {b: 4}}],
-    [{a: [3, 4, 5], b: 'b'}, {a: {b: jestExpect.any(String)}}],
+    [{ a: 'b', c: 'd' }, { e: 'b' }],
+    [{ a: 'b', c: 'd' }, { a: 'b!', c: 'd' }],
+    [{ a: 'a', c: 'd' }, { a: jestExpect.any(Number) }],
+    [{ a: 'b', t: { x: { r: 'r' }, z: 'z' } }, { a: 'b', t: { z: [3] } }],
+    [{ a: 'b', t: { x: { r: 'r' }, z: 'z' } }, { t: { l: { r: 'r' } } }],
+    [{ a: [3, 4, 5], b: 'b' }, { a: [3, 4, 5, 6] }],
+    [{ a: [3, 4, 5], b: 'b' }, { a: [3, 4] }],
+    [{ a: [3, 4, 'v'], b: 'b' }, { a: ['v'] }],
+    [{ a: [3, 4, 5], b: 'b' }, { a: { b: 4 } }],
+    [{ a: [3, 4, 5], b: 'b' }, { a: { b: jestExpect.any(String) } }],
     [[1, 2], [1, 3]],
     [[0], [-0]],
     [new Set([1, 2]), new Set([2])],
     [new Date('2015-11-30'), new Date('2015-10-10')],
-    [{a: new Date('2015-11-30'), b: 'b'}, {a: new Date('2015-10-10')}],
-    [{a: null, b: 'b'}, {a: '4'}],
-    [{a: null, b: 'b'}, {a: undefined}],
-    [{a: undefined}, {a: null}],
-    [{a: [{a: 'a', b: 'b'}]}, {a: [{a: 'c'}]}],
-    [{a: 1, b: 1, c: 1, d: {e: {f: 555}}}, {d: {e: {f: 222}}}],
-    [{}, {a: undefined}],
+    [{ a: new Date('2015-11-30'), b: 'b' }, { a: new Date('2015-10-10') }],
+    [{ a: null, b: 'b' }, { a: '4' }],
+    [{ a: null, b: 'b' }, { a: undefined }],
+    [{ a: undefined }, { a: null }],
+    [{ a: [{ a: 'a', b: 'b' }] }, { a: [{ a: 'c' }] }],
+    [{ a: 1, b: 1, c: 1, d: { e: { f: 555 } } }, { d: { e: { f: 222 } } }],
+    [{}, { a: undefined }],
     [[1, 2, 3], [2, 3, 1]],
     [[1, 2, 3], [1, 2, 2]],
     [new Error('foo'), new Error('bar')],
-    [Object.assign(Object.create(null), {a: 'b'}), {c: 'd'}],
+    [Object.assign(Object.create(null), { a: 'b' }), { c: 'd' }],
   ].forEach(([n1, n2]) => {
     it(`{pass: false} expect(${stringify(n1)}).toMatchObject(${stringify(
       n2,

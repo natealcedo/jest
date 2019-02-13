@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
  */
 
-import type {
-  Expect,
+import {
   ExpectationObject,
   AsyncExpectationResult,
   SyncExpectationResult,
@@ -18,16 +16,16 @@ import type {
   RawMatcherFn,
   ThrowingMatcherFn,
   PromiseMatcherFn,
-} from 'types/Matchers';
+} from './types';
 
 import * as matcherUtils from 'jest-matcher-utils';
-import {iterableEquality, subsetEquality} from './utils';
+import { iterableEquality, subsetEquality } from './utils';
 import matchers from './matchers';
 import spyMatchers from './spyMatchers';
 import toThrowMatchers, {
   createMatcher as createThrowMatcher,
 } from './toThrowMatchers';
-import {equals} from './jasmineUtils';
+import { equals } from './jasmineUtils';
 import {
   any,
   anything,
@@ -53,18 +51,18 @@ class JestAssertionError extends Error {
   matcherResult: any;
 }
 
-const isPromise = obj =>
+const isPromise = (obj: any) =>
   !!obj &&
   (typeof obj === 'object' || typeof obj === 'function') &&
   typeof obj.then === 'function';
 
-const createToThrowErrorMatchingSnapshotMatcher = function(matcher) {
-  return function(received: any, testNameOrInlineSnapshot?: string) {
+const createToThrowErrorMatchingSnapshotMatcher = function (matcher: any) {
+  return function (this: any, received: any, testNameOrInlineSnapshot?: string) {
     return matcher.apply(this, [received, testNameOrInlineSnapshot, true]);
   };
 };
 
-const getPromiseMatcher = (name, matcher) => {
+const getPromiseMatcher = (name: any, matcher: any) => {
   if (name === 'toThrow' || name === 'toThrowError') {
     return createThrowMatcher(name, true);
   } else if (
@@ -77,16 +75,18 @@ const getPromiseMatcher = (name, matcher) => {
   return null;
 };
 
-const expect = (actual: any, ...rest): ExpectationObject => {
+const expect = (actual: any, ...rest: Array<unknown>): ExpectationObject => {
   if (rest.length !== 0) {
     throw new Error('Expect takes at most one argument.');
   }
 
   const allMatchers = getMatchers();
-  const expectation = {
+  const expectation: {
+    [key: string]: any
+  } = {
     not: {},
-    rejects: {not: {}},
-    resolves: {not: {}},
+    rejects: { not: {} },
+    resolves: { not: {} },
   };
 
   const err = new JestAssertionError();
@@ -131,7 +131,7 @@ const expect = (actual: any, ...rest): ExpectationObject => {
   return expectation;
 };
 
-const getMessage = message =>
+const getMessage = (message: any) =>
   (message && message()) ||
   matcherUtils.RECEIVED_COLOR('No message was specified for this matcher.');
 
@@ -234,7 +234,7 @@ const makeThrowingMatcher = (
 ): ThrowingMatcherFn =>
   function throwingMatcher(...args): any {
     let throws = true;
-    const utils = {...matcherUtils, iterableEquality, subsetEquality};
+    const utils = { ...matcherUtils, iterableEquality, subsetEquality };
 
     const matcherContext: MatcherState = {
       // When throws is disabled, the matcher will not throw errors during test
@@ -349,7 +349,7 @@ expect.arrayContaining = arrayContaining;
 expect.stringContaining = stringContaining;
 expect.stringMatching = stringMatching;
 
-const _validateResult = result => {
+const _validateResult = (result: any) => {
   if (
     typeof result !== 'object' ||
     typeof result.pass !== 'boolean' ||
@@ -359,10 +359,10 @@ const _validateResult = result => {
   ) {
     throw new Error(
       'Unexpected return from a matcher function.\n' +
-        'Matcher functions should ' +
-        'return an object in the following format:\n' +
-        '  {message?: string | function, pass: boolean}\n' +
-        `'${matcherUtils.stringify(result)}' was returned`,
+      'Matcher functions should ' +
+      'return an object in the following format:\n' +
+      '  {message?: string | function, pass: boolean}\n' +
+      `'${matcherUtils.stringify(result)}' was returned`,
     );
   }
 };
@@ -376,7 +376,8 @@ function assertions(expected: number) {
   getState().expectedAssertionsNumber = expected;
   getState().expectedAssertionsNumberError = error;
 }
-function hasAssertions(...args) {
+
+function hasAssertions(...args: Array<unknown>) {
   const error = new Error();
   if (Error.captureStackTrace) {
     Error.captureStackTrace(error, hasAssertions);
@@ -399,4 +400,4 @@ expect.getState = getState;
 expect.setState = setState;
 expect.extractExpectedAssertionsErrors = extractExpectedAssertionsErrors;
 
-module.exports = (expect: Expect);
+export = expect;
